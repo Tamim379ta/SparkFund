@@ -1,59 +1,135 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { Button } from "@heroui/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
+import { FiMenu, FiX } from "react-icons/fi";
 
 export default function Navbar() {
-  const user = null; // wire up Better Auth later
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {
-    // Better Auth logout
+    await authClient.signOut();
+    toast.success("Logged out!");
+    router.push("/");
+    setMenuOpen(false);
   };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-surface bg-background/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-1">
           <span className="text-2xl font-bold text-primary">Spark</span>
           <span className="text-2xl font-bold text-text">Fund</span>
         </Link>
 
-        {/* Nav Items */}
-        <div className="flex items-center gap-3">
-          {!user ? (
+        {/* Desktop Nav */}
+        <div className="hidden md:flex items-center gap-3">
+          {isPending ? null : !user ? (
             <>
-              <Link href="/explore">
-                <Button variant="light" className="text-text">Explore Campaigns</Button>
+              <Link href="/explore" className="text-text hover:text-primary transition text-sm font-medium">
+                Explore Campaigns
               </Link>
-              <Link href="/login">
-                <Button variant="light" className="text-text">Login</Button>
+              <Link href="/login" className="text-text hover:text-primary transition text-sm font-medium px-4 py-2">
+                Login
               </Link>
-              <Link href="/register">
-                <Button className="bg-primary text-white">Register</Button>
+              <Link
+                href="/register"
+                className="bg-primary text-white text-sm font-semibold px-5 py-2 rounded-full hover:opacity-90 transition"
+              >
+                Register
               </Link>
-              <a href="https://github.com/your-repo" target="_blank">
-                <Button variant="bordered" className="border-primary text-primary">Join as Developer</Button>
-              </a>
             </>
           ) : (
             <>
-              <Link href="/dashboard">
-                <Button variant="light" className="text-text">Dashboard</Button>
+              <Link href="/explore" className="text-text hover:text-primary transition text-sm font-medium">
+                Explore
               </Link>
-              <div className="flex items-center gap-2 bg-surface px-3 py-1 rounded-full">
-                <span className="text-primary font-bold">{user.credits}</span>
-                <span className="text-muted text-sm">credits</span>
+              <Link href="/dashboard" className="text-text hover:text-primary transition text-sm font-medium">
+                Dashboard
+              </Link>
+              <div className="flex items-center gap-1 bg-surface border border-white/10 px-3 py-1.5 rounded-full">
+                <span className="text-primary font-bold text-sm">{user.credits ?? 0}</span>
+                <span className="text-muted text-xs">credits</span>
               </div>
-              <a href="https://github.com/your-repo" target="_blank">
-                <Button variant="bordered" className="border-primary text-primary">Join as Developer</Button>
-              </a>
-              <img src={user.image} alt={user.name} className="w-9 h-9 rounded-full object-cover border-2 border-primary" />
-              <Button onClick={handleLogout} variant="light" className="text-muted text-sm">Logout</Button>
+              <div className="flex items-center gap-2">
+                {user.image ? (
+                  <img src={user.image} alt={user.name} className="w-9 h-9 rounded-full object-cover border-2 border-primary" />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary font-bold text-sm">
+                    {user.name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <button onClick={handleLogout} className="text-muted text-sm hover:text-primary transition">
+                  Logout
+                </button>
+              </div>
             </>
           )}
         </div>
+
+        {/* Mobile Hamburger */}
+        <button
+          className="md:hidden text-text text-2xl"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <FiX /> : <FiMenu />}
+        </button>
       </div>
+
+      {/* Mobile Menu */}
+      {menuOpen && (
+        <div className="md:hidden bg-surface border-t border-white/5 px-6 py-6 flex flex-col gap-4">
+          {!user ? (
+            <>
+              <Link href="/explore" onClick={() => setMenuOpen(false)} className="text-text hover:text-primary transition text-sm font-medium">
+                Explore Campaigns
+              </Link>
+              <Link href="/login" onClick={() => setMenuOpen(false)} className="text-text hover:text-primary transition text-sm font-medium">
+                Login
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMenuOpen(false)}
+                className="bg-primary text-white text-sm font-semibold px-5 py-2 rounded-full text-center hover:opacity-90 transition"
+              >
+                Register
+              </Link>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-3 mb-2">
+                {user.image ? (
+                  <img src={user.image} alt={user.name} className="w-10 h-10 rounded-full object-cover border-2 border-primary" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary font-bold">
+                    {user.name?.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <p className="text-text font-semibold text-sm">{user.name}</p>
+                  <p className="text-muted text-xs">{user.credits ?? 0} credits</p>
+                </div>
+              </div>
+              <Link href="/explore" onClick={() => setMenuOpen(false)} className="text-text hover:text-primary transition text-sm">
+                Explore
+              </Link>
+              <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-text hover:text-primary transition text-sm">
+                Dashboard
+              </Link>
+              <button onClick={handleLogout} className="text-left text-muted hover:text-primary transition text-sm">
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 }
