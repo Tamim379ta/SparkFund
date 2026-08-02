@@ -32,6 +32,7 @@ export default function RegisterPage() {
       password: form.password,
       role: form.role,
       credits: form.role === "supporter" ? 50 : 20,
+
     });
     setLoading(false);
     if (error) {
@@ -151,11 +152,10 @@ export default function RegisterPage() {
                     key={r}
                     type="button"
                     onClick={() => setForm({ ...form, role: r })}
-                    className={`py-3 rounded-xl border text-sm font-semibold capitalize transition-all duration-300 ${
-                      form.role === r
+                    className={`py-3 rounded-xl border text-sm font-semibold capitalize transition-all duration-300 ${form.role === r
                         ? "border-primary bg-primary/10 text-primary"
                         : "border-white/10 bg-surface text-muted hover:border-primary/40"
-                    }`}
+                      }`}
                   >
                     {r === "supporter" ? "🙌 Supporter" : "🚀 Creator"}
                   </button>

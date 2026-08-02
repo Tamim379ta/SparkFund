@@ -24,6 +24,7 @@ export default function LoginPage() {
     const { error } = await authClient.signIn.email({
       email: form.email,
       password: form.password,
+    
     });
     setLoading(false);
     if (error) {
