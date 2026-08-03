@@ -40,7 +40,7 @@ export default function RegisterPage() {
       return;
     }
     toast.success("Account created! Welcome to SparkFund!");
-    router.push("/dashboard");
+    router.push("/");
   };
 
   return (
