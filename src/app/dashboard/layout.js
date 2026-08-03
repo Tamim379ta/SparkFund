@@ -8,17 +8,19 @@ import toast from "react-hot-toast";
 import {
   FiHome, FiTarget, FiDollarSign, FiUsers,
   FiFileText, FiPlusCircle, FiMenu, FiX,
-  FiLogOut, FiCompass, FiBell
+  FiLogOut, FiCompass, FiBell,
+  FiCreditCard
 } from "react-icons/fi";
 
 const roleLinks = {
-  supporter: [
-    { label: "Overview", href: "/dashboard/supporter", icon: <FiHome /> },
-    { label: "My Contributions", href: "/dashboard/supporter/contributions", icon: <FiDollarSign /> },
-    { label: "Explore Campaigns", href: "/explore", icon: <FiCompass /> },
-    { label: "Buy Credits", href: "/dashboard/supporter/buy-credits", icon: <FiPlusCircle /> },
-    { label: "Notifications", href: "/dashboard/supporter/notifications", icon: <FiBell /> },
-  ],
+ supporter: [
+  { label: "Overview", href: "/dashboard/supporter", icon: <FiHome /> },
+  { label: "My Contributions", href: "/dashboard/supporter/contributions", icon: <FiDollarSign /> },
+  { label: "Explore Campaigns", href: "/explore", icon: <FiCompass /> },
+  { label: "Buy Credits", href: "/dashboard/supporter/buy-credits", icon: <FiPlusCircle /> },
+  { label: "Payment History", href: "/dashboard/supporter/payment-history", icon: <FiCreditCard /> },
+  { label: "Notifications", href: "/dashboard/supporter/notifications", icon: <FiBell /> },
+],
   creator: [
     { label: "Overview", href: "/dashboard/creator", icon: <FiHome /> },
     { label: "My Campaigns", href: "/dashboard/creator/campaigns", icon: <FiTarget /> },

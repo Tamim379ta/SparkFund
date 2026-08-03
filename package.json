@@ -14,6 +14,7 @@
     "@heroui/input": "^2.4.33",
     "@heroui/react": "^3.2.3",
     "@heroui/styles": "^3.2.3",
+    "@stripe/stripe-js": "^9.12.1",
     "better-auth": "^1.6.25",
     "framer-motion": "^12.43.0",
     "mongodb": "^7.5.0",
@@ -23,6 +24,7 @@
     "react-fast-marquee": "^1.6.5",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.7.0",
+    "stripe": "^22.4.0",
     "swiper": "^14.0.7"
   },
   "devDependencies": {
