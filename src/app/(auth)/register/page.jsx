@@ -17,7 +17,33 @@ export default function RegisterPage() {
     email: "",
     password: "",
     role: "supporter",
+    image: "",
   });
+  const [imageUploading, setImageUploading] = useState(false);
+  const [preview, setPreview] = useState(null);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageUploading(true);
+    setPreview(URL.createObjectURL(file));
+
+    const data = new FormData();
+    data.append("image", file);
+
+    try {
+      const res = await fetch(
+        `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_KEY}`,
+        { method: "POST", body: data }
+      );
+      const json = await res.json();
+      setForm((prev) => ({ ...prev, image: json.data.url }));
+    } catch {
+      toast.error("Image upload failed");
+    } finally {
+      setImageUploading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -32,7 +58,7 @@ export default function RegisterPage() {
       password: form.password,
       role: form.role,
       credits: form.role === "supporter" ? 50 : 20,
-
+      image: form.image,
     });
     setLoading(false);
     if (error) {
@@ -105,6 +131,25 @@ export default function RegisterPage() {
                 />
               </div>
             </div>
+            {/* Profile Picture */}
+            <div className="flex flex-col gap-1">
+              <label className="text-muted text-sm">Profile Picture</label>
+              <label className="cursor-pointer">
+                <div className="flex items-center gap-4 bg-surface border border-white/10 hover:border-primary/50 rounded-xl px-4 py-3 transition-all">
+                  {preview ? (
+                    <img src={preview} alt="preview" className="w-10 h-10 rounded-full object-cover border-2 border-primary" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                      <FiUser className="text-primary" />
+                    </div>
+                  )}
+                  <span className="text-muted text-sm">
+                    {imageUploading ? "Uploading..." : preview ? "Change photo" : "Upload profile picture"}
+                  </span>
+                </div>
+                <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+              </label>
+            </div>
 
             {/* Email */}
             <div className="flex flex-col gap-1">
@@ -153,8 +198,8 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setForm({ ...form, role: r })}
                     className={`py-3 rounded-xl border text-sm font-semibold capitalize transition-all duration-300 ${form.role === r
-                        ? "border-primary bg-primary/10 text-primary"
-                        : "border-white/10 bg-surface text-muted hover:border-primary/40"
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-white/10 bg-surface text-muted hover:border-primary/40"
                       }`}
                   >
                     {r === "supporter" ? "🙌 Supporter" : "🚀 Creator"}

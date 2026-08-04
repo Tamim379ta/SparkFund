@@ -14,15 +14,16 @@ export default function CreateCampaignPage() {
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [preview, setPreview] = useState(null);
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    category: "",
-    image: "",
-    goalCredits: "",
-    deadline: "",
-  });
-
+ const [form, setForm] = useState({
+  title: "",
+  description: "",
+  category: "",
+  image: "",
+  goalCredits: "",
+  minimumContribution: "",
+  deadline: "",
+  rewardInfo: "",
+});
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
