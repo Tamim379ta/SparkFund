@@ -11,22 +11,23 @@ import {
   FiLogOut, FiCompass, FiBell,
   FiCreditCard
 } from "react-icons/fi";
+import NotificationBell from "@/components/dashboard/NotificationBell";
+
+
 
 const roleLinks = {
- supporter: [
-  { label: "Overview", href: "/dashboard/supporter", icon: <FiHome /> },
-  { label: "My Contributions", href: "/dashboard/supporter/contributions", icon: <FiDollarSign /> },
-  { label: "Explore Campaigns", href: "/explore", icon: <FiCompass /> },
-  { label: "Buy Credits", href: "/dashboard/supporter/buy-credits", icon: <FiPlusCircle /> },
-  { label: "Payment History", href: "/dashboard/supporter/payment-history", icon: <FiCreditCard /> },
-  { label: "Notifications", href: "/dashboard/supporter/notifications", icon: <FiBell /> },
-],
+  supporter: [
+    { label: "Overview", href: "/dashboard/supporter", icon: <FiHome /> },
+    { label: "My Contributions", href: "/dashboard/supporter/contributions", icon: <FiDollarSign /> },
+    { label: "Explore Campaigns", href: "/explore", icon: <FiCompass /> },
+    { label: "Buy Credits", href: "/dashboard/supporter/buy-credits", icon: <FiPlusCircle /> },
+    { label: "Payment History", href: "/dashboard/supporter/payment-history", icon: <FiCreditCard /> },
+  ],
   creator: [
     { label: "Overview", href: "/dashboard/creator", icon: <FiHome /> },
     { label: "My Campaigns", href: "/dashboard/creator/campaigns", icon: <FiTarget /> },
     { label: "Create Campaign", href: "/dashboard/creator/create", icon: <FiPlusCircle /> },
     { label: "Withdrawals", href: "/dashboard/creator/withdrawals", icon: <FiDollarSign /> },
-    { label: "Notifications", href: "/dashboard/creator/notifications", icon: <FiBell /> },
   ],
   admin: [
     { label: "Overview", href: "/dashboard/admin", icon: <FiHome /> },
@@ -95,6 +96,9 @@ export default function DashboardLayout({ children }) {
               <span className="text-muted text-xs">credits available</span>
             </div>
           )}
+          <div className="mt-2">
+            <NotificationBell sidebarMode={true} />
+          </div>
         </div>
 
         {/* Nav Links */}
@@ -118,6 +122,10 @@ export default function DashboardLayout({ children }) {
             );
           })}
         </nav>
+
+
+
+
 
         {/* Logout */}
         <div className="px-4 py-4 border-t border-white/5">
