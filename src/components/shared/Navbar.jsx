@@ -13,6 +13,7 @@ export default function Navbar() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
+  console.log(user);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleLogout = async () => {

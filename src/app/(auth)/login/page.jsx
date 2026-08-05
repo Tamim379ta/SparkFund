@@ -10,6 +10,7 @@ import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { refetch } = authClient.useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
@@ -32,6 +33,7 @@ export default function LoginPage() {
       return;
     }
     toast.success("Welcome back!");
+    await refetch();
     router.push("/");
   };
 
