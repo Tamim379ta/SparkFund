@@ -37,6 +37,9 @@ export default function CampaignDetailClient({ id }) {
     if (user.role !== "supporter") return toast.error("Only supporters can contribute!");
     if (!credits || Number(credits) <= 0) return toast.error("Enter a valid amount");
     if (Number(credits) > user.credits) return toast.error("Insufficient credits!");
+    if (Number(credits) < campaign.minimumContribution) {
+      return toast.error(`Minimum contribution is ${campaign.minimumContribution} credits`);
+    }
 
     setContributing(true);
     try {
@@ -104,6 +107,13 @@ export default function CampaignDetailClient({ id }) {
             <p className="text-muted leading-relaxed whitespace-pre-line">{campaign.description}</p>
           </div>
 
+          {campaign.rewardInfo && (
+            <div className="bg-surface border border-white/5 rounded-2xl p-6">
+              <h2 className="text-text font-bold text-xl mb-4">🎁 Rewards</h2>
+              <p className="text-muted leading-relaxed whitespace-pre-line">{campaign.rewardInfo}</p>
+            </div>
+          )}
+
           {/* Stats Row */}
           <div className="grid grid-cols-3 gap-4">
             {[
@@ -138,15 +148,21 @@ export default function CampaignDetailClient({ id }) {
             {/* Contribute Form */}
             {user?.role === "supporter" ? (
               <form onSubmit={handleContribute} className="flex flex-col gap-3">
-                <p className="text-muted text-xs">Your balance: <span className="text-primary font-bold">{user.credits} credits</span></p>
+                <p className="text-muted text-xs">
+                  Your balance: <span className="text-primary font-bold">{user.credits} credits</span>
+                </p>
+                <p className="text-muted text-xs">
+                  Minimum: <span className="text-text font-medium">{campaign.minimumContribution} credits</span>
+                </p>
+                
                 <div className="flex items-center gap-3 bg-background border border-white/10 focus-within:border-primary rounded-xl px-4 py-3 transition-all">
                   <FiZap className="text-muted shrink-0" />
                   <input
                     type="number"
-                    placeholder="Enter credits to contribute"
+                    placeholder={`Min: ${campaign.minimumContribution} credits`}
                     value={credits}
                     onChange={(e) => setCredits(e.target.value)}
-                    min={1}
+                    min={campaign.minimumContribution}
                     max={user.credits}
                     required
                     className="bg-transparent outline-none text-text w-full text-sm placeholder:text-muted/50"

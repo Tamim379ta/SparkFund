@@ -3,14 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiSearch, FiFilter, FiClock } from "react-icons/fi";
+import { useSearchParams } from "next/navigation";
 
 const categories = ["All", "Technology", "Health", "Art & Music", "Community", "Education", "Environment"];
 
 export default function ExploreClient() {
+  const searchParams = useSearchParams();
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState(() => searchParams.get("category") || "All");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -76,11 +78,10 @@ export default function ExploreClient() {
             <button
               key={cat}
               onClick={() => setCategory(cat)}
-              className={`text-sm px-4 py-1.5 rounded-full border transition-all duration-200 ${
-                category === cat
+              className={`text-sm px-4 py-1.5 rounded-full border transition-all duration-200 ${category === cat
                   ? "bg-primary text-white border-primary"
                   : "text-muted border-white/10 hover:border-primary/40 hover:text-text"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -177,11 +178,10 @@ export default function ExploreClient() {
               <button
                 key={p}
                 onClick={() => setPage(p)}
-                className={`w-9 h-9 rounded-full text-sm font-medium transition ${
-                  p === page
+                className={`w-9 h-9 rounded-full text-sm font-medium transition ${p === page
                     ? "bg-primary text-white"
                     : "border border-white/10 text-muted hover:border-primary/40 hover:text-primary"
-                }`}
+                  }`}
               >
                 {p}
               </button>

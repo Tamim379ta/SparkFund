@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import toast from "react-hot-toast";
@@ -18,13 +18,14 @@ function BuyCreditsContent() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const [loading, setLoading] = useState(null);
-  const [verified, setVerified] = useState(false);
+  const verifyCalledRef = useRef(false);
 
   useEffect(() => {
     const success = searchParams.get("success");
     const sessionId = searchParams.get("session_id");
 
-    if (success === "true" && sessionId && !verified) {
+    if (success === "true" && sessionId && !verifyCalledRef.current) {
+      verifyCalledRef.current = true;
       verifyPayment(sessionId);
     }
 
@@ -32,7 +33,7 @@ function BuyCreditsContent() {
       toast.error("Payment canceled.");
       router.replace("/dashboard/supporter/buy-credits");
     }
-  }, [searchParams]);
+  }, []);
 
   const verifyPayment = async (sessionId) => {
     try {
@@ -43,11 +44,10 @@ function BuyCreditsContent() {
         body: JSON.stringify({ sessionId }),
       });
       const data = await res.json();
-      if (data.success) {
-        setVerified(true);
+      if (data.success && !data.alreadyProcessed) {
         toast.success("Credits added to your account!");
-        router.replace("/dashboard/supporter/buy-credits");
       }
+      router.replace("/dashboard/supporter/buy-credits");
     } catch (err) {
       console.error(err);
     }
@@ -81,7 +81,6 @@ function BuyCreditsContent() {
         </p>
       </div>
 
-      {/* Info */}
       <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 flex items-center gap-3">
         <FiZap className="text-primary text-xl shrink-0" />
         <p className="text-muted text-sm">
@@ -89,30 +88,25 @@ function BuyCreditsContent() {
         </p>
       </div>
 
-      {/* Packages */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         {packages.map((pkg, index) => (
           <div
             key={pkg.label}
             className={`relative bg-gradient-to-br ${pkg.color} border ${pkg.border} rounded-2xl p-6 flex flex-col gap-4 hover:scale-105 transition-all duration-300`}
           >
-            {/* Badge */}
             {pkg.badge && (
               <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-bold px-4 py-1 rounded-full">
                 {pkg.badge}
               </span>
             )}
-
             <div>
               <p className="text-text font-bold text-lg">{pkg.label}</p>
               <p className="text-muted text-xs mt-1">{pkg.description}</p>
             </div>
-
             <div>
               <p className="text-3xl font-black text-primary">{pkg.credits}</p>
               <p className="text-muted text-sm">credits</p>
             </div>
-
             <div className="flex flex-col gap-2 text-xs text-muted">
               <div className="flex items-center gap-2">
                 <FiCheckCircle className="text-emerald-400 shrink-0" />
@@ -127,7 +121,6 @@ function BuyCreditsContent() {
                 <span>Secure payment</span>
               </div>
             </div>
-
             <button
               onClick={() => handleBuy(index)}
               disabled={loading === index}
@@ -139,7 +132,6 @@ function BuyCreditsContent() {
         ))}
       </div>
 
-      {/* Payment History link */}
       <p className="text-muted text-sm text-center">
         View your{" "}
         <a href="/dashboard/supporter/payment-history" className="text-primary hover:underline">

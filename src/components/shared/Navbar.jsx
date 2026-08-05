@@ -7,6 +7,8 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FiMenu, FiX } from "react-icons/fi";
 
+const GITHUB_REPO = "https://github.com/Tamim379ta";
+
 export default function Navbar() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -45,6 +47,13 @@ export default function Navbar() {
               >
                 Register
               </Link>
+              <a
+                href={GITHUB_REPO}
+                target="_blank"
+                className="border border-primary/40 text-primary text-sm font-semibold px-5 py-2 rounded-full hover:bg-primary hover:text-white transition"
+              >
+                Join as Developer
+              </a>
             </>
           ) : (
             <>
@@ -58,6 +67,13 @@ export default function Navbar() {
                 <span className="text-primary font-bold text-sm">{user.credits ?? 0}</span>
                 <span className="text-muted text-xs">credits</span>
               </div>
+              <a
+                href={GITHUB_REPO}
+                target="_blank"
+                className="border border-primary/40 text-primary text-sm font-semibold px-5 py-2 rounded-full hover:bg-primary hover:text-white transition"
+              >
+                Join as Developer
+              </a>
               <div className="flex items-center gap-2">
                 {user.image ? (
                   <img src={user.image} alt={user.name} className="w-9 h-9 rounded-full object-cover border-2 border-primary" />
@@ -101,6 +117,14 @@ export default function Navbar() {
               >
                 Register
               </Link>
+              <a
+                href={GITHUB_REPO}
+                target="_blank"
+                onClick={() => setMenuOpen(false)}
+                className="border border-primary/40 text-primary text-sm font-semibold px-5 py-2 rounded-full text-center hover:bg-primary hover:text-white transition"
+              >
+                Join as Developer
+              </a>
             </>
           ) : (
             <>
@@ -123,6 +147,14 @@ export default function Navbar() {
               <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-text hover:text-primary transition text-sm">
                 Dashboard
               </Link>
+              <a
+                href={GITHUB_REPO}
+                target="_blank"
+                onClick={() => setMenuOpen(false)}
+                className="text-primary text-sm hover:underline"
+              >
+                Join as Developer
+              </a>
               <button onClick={handleLogout} className="text-left text-muted hover:text-primary transition text-sm">
                 Logout
               </button>

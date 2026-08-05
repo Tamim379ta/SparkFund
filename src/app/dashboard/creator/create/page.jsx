@@ -14,16 +14,16 @@ export default function CreateCampaignPage() {
   const [loading, setLoading] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [preview, setPreview] = useState(null);
- const [form, setForm] = useState({
-  title: "",
-  description: "",
-  category: "",
-  image: "",
-  goalCredits: "",
-  minimumContribution: "",
-  deadline: "",
-  rewardInfo: "",
-});
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    category: "",
+    image: "",
+    goalCredits: "",
+    minimumContribution: "",
+    deadline: "",
+    rewardInfo: "",
+  });
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -148,6 +148,35 @@ export default function CreateCampaignPage() {
               className={inputClass}
             />
           </div>
+        </div>
+        {/* Minimum Contribution */}
+        <div className="flex flex-col gap-1">
+          <label className="text-muted text-sm">Minimum Contribution (Credits)</label>
+          <div className={wrapperClass}>
+            <input
+              type="number"
+              name="minimumContribution"
+              placeholder="e.g. 10"
+              value={form.minimumContribution}
+              onChange={handleChange}
+              required
+              min={1}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* Reward Info */}
+        <div className="flex flex-col gap-1">
+          <label className="text-muted text-sm">Reward Info</label>
+          <textarea
+            name="rewardInfo"
+            placeholder="What will supporters receive for backing this campaign?"
+            value={form.rewardInfo}
+            onChange={handleChange}
+            rows={3}
+            className="bg-surface border border-white/10 hover:border-primary/50 focus:border-primary rounded-xl px-4 py-3 text-text text-sm placeholder:text-muted/50 outline-none transition-all resize-none"
+          />
         </div>
 
         {/* Deadline */}
