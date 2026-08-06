@@ -25,7 +25,7 @@ export default function LoginPage() {
     const { error } = await authClient.signIn.email({
       email: form.email,
       password: form.password,
-    
+
     });
     setLoading(false);
     if (error) {
@@ -119,13 +119,20 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button
+            <button
               type="submit"
-              isLoading={loading}
-              className="bg-primary text-white font-semibold rounded-full hover:opacity-90 transition"
+              disabled={loading}
+              className="w-full bg-primary text-white font-semibold rounded-full py-3 hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              Sign In
-            </Button>
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </button>
           </form>
         </div>
       </div>
