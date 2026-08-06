@@ -3,7 +3,7 @@
 SparkFund is a community-powered crowdfunding platform where creators launch campaigns and supporters back what matters most to them. Built with Next.js, Tailwind CSS, and HeroUI.
 
 ## 🔗 Live Site
-[https://sparkfund.vercel.app](https://sparkfund.vercel.app)
+[click here](https://spark-fund-lime.vercel.app)
 
 ## 🔐 Admin Credentials
 - **Email:** admin@gmail.com
