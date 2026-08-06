@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { FiTarget, FiPlusCircle, FiClock, FiCheckCircle, FiXCircle, FiTrendingUp, FiEdit, FiTrash2, FiX } from "react-icons/fi";
+import { FiTarget, FiPlusCircle, FiEdit, FiTrash2, FiX, FiAlertTriangle } from "react-icons/fi";
 
 const statusConfig = {
   pending: { label: "Pending", color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20" },
@@ -13,6 +13,42 @@ const statusConfig = {
   completed: { label: "Completed", color: "text-secondary bg-secondary/10 border-secondary/20" },
 };
 
+function ConfirmModal({ open, onConfirm, onCancel, title }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+      <div className="bg-surface border border-white/10 rounded-2xl w-full max-w-sm p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-red-400/10 border border-red-400/20 flex items-center justify-center shrink-0">
+            <FiAlertTriangle className="text-red-400 text-lg" />
+          </div>
+          <h2 className="text-text font-bold text-lg">Delete Campaign</h2>
+        </div>
+        <p className="text-muted text-sm mb-2">
+          Are you sure you want to delete <span className="text-text font-semibold">"{title}"</span>?
+        </p>
+        <p className="text-yellow-400/80 text-xs mb-6">
+          ⚠️ This will refund all approved supporters their credits.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 border border-white/10 text-muted py-2.5 rounded-full text-sm hover:text-text transition"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-red-500 text-white font-semibold py-2.5 rounded-full text-sm hover:opacity-90 transition"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MyCampaignsPage() {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,6 +56,7 @@ export default function MyCampaignsPage() {
   const [editForm, setEditForm] = useState({ title: "", description: "", rewardInfo: "" });
   const [updating, setUpdating] = useState(false);
   const [deleting, setDeleting] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ open: false, id: null, title: "" });
 
   useEffect(() => {
     fetchCampaigns();
@@ -70,8 +107,13 @@ export default function MyCampaignsPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure? This will refund all approved supporters.")) return;
+  const handleDeleteClick = (id, title) => {
+    setConfirmModal({ open: true, id, title });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const id = confirmModal.id;
+    setConfirmModal({ open: false, id: null, title: "" });
     setDeleting(id);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/campaigns/${id}`, {
@@ -99,6 +141,13 @@ export default function MyCampaignsPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <ConfirmModal
+        open={confirmModal.open}
+        title={confirmModal.title}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setConfirmModal({ open: false, id: null, title: "" })}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -114,7 +163,6 @@ export default function MyCampaignsPage() {
         </Link>
       </div>
 
-      {/* Empty State */}
       {campaigns.length === 0 ? (
         <div className="bg-surface border border-white/5 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
           <FiTarget className="text-muted text-5xl mb-4" />
@@ -136,7 +184,6 @@ export default function MyCampaignsPage() {
 
             return (
               <div key={campaign._id} className="bg-surface border border-white/5 hover:border-primary/20 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col">
-                {/* Image */}
                 <div className="relative h-44 overflow-hidden">
                   <img src={campaign.image} alt={campaign.title} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -145,7 +192,6 @@ export default function MyCampaignsPage() {
                   </span>
                 </div>
 
-                {/* Content */}
                 <div className="p-5 flex flex-col gap-3 flex-1">
                   <div>
                     <span className="text-primary text-xs font-medium">{campaign.category}</span>
@@ -153,7 +199,6 @@ export default function MyCampaignsPage() {
                     <p className="text-muted text-xs mt-1 line-clamp-2">{campaign.description}</p>
                   </div>
 
-                  {/* Progress */}
                   <div>
                     <div className="flex justify-between text-xs mb-1.5">
                       <span className="text-primary font-semibold">{campaign.raisedCredits} credits raised</span>
@@ -168,7 +213,6 @@ export default function MyCampaignsPage() {
                     </div>
                   </div>
 
-                  {/* Actions */}
                   <div className="flex gap-2 mt-auto pt-2">
                     <Link
                       href={`/campaign/${campaign._id}`}
@@ -189,7 +233,7 @@ export default function MyCampaignsPage() {
                       <FiEdit />
                     </button>
                     <button
-                      onClick={() => handleDelete(campaign._id)}
+                      onClick={() => handleDeleteClick(campaign._id, campaign.title)}
                       disabled={deleting === campaign._id}
                       className="flex items-center gap-1.5 text-xs font-medium text-red-400 border border-red-400/30 hover:bg-red-400/10 px-3 py-2 rounded-xl transition disabled:opacity-50"
                     >

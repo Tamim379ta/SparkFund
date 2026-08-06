@@ -2,15 +2,49 @@
 
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { FiTrash2, FiUsers } from "react-icons/fi";
+import { FiTrash2, FiUsers, FiX, FiAlertTriangle } from "react-icons/fi";
 
 const roles = ["supporter", "creator", "admin"];
+
+function ConfirmModal({ open, onConfirm, onCancel, name }) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+      <div className="bg-surface border border-white/10 rounded-2xl w-full max-w-sm p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-red-400/10 border border-red-400/20 flex items-center justify-center">
+            <FiAlertTriangle className="text-red-400 text-lg" />
+          </div>
+          <h2 className="text-text font-bold text-lg">Delete User</h2>
+        </div>
+        <p className="text-muted text-sm mb-6">
+          Are you sure you want to delete <span className="text-text font-semibold">{name}</span>? This action cannot be undone.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 border border-white/10 text-muted py-2.5 rounded-full text-sm hover:text-text transition"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 bg-red-500 text-white font-semibold py-2.5 rounded-full text-sm hover:opacity-90 transition"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState(null);
   const [updatingRole, setUpdatingRole] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({ open: false, id: null, name: "" });
 
   useEffect(() => {
     fetchUsers();
@@ -30,8 +64,13 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
+  const handleDeleteClick = (id, name) => {
+    setConfirmModal({ open: true, id, name });
+  };
+
+  const handleDeleteConfirm = async () => {
+    const id = confirmModal.id;
+    setConfirmModal({ open: false, id: null, name: "" });
     setDeleting(id);
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
@@ -79,6 +118,13 @@ export default function AdminUsersPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <ConfirmModal
+        open={confirmModal.open}
+        name={confirmModal.name}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setConfirmModal({ open: false, id: null, name: "" })}
+      />
+
       <div>
         <h1 className="text-2xl font-bold text-text">Manage Users</h1>
         <p className="text-muted text-sm mt-1">{users.length} total users</p>
@@ -91,7 +137,6 @@ export default function AdminUsersPage() {
         </div>
       ) : (
         <div className="bg-surface border border-white/5 rounded-2xl overflow-hidden">
-          {/* Table Header */}
           <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-white/5 text-muted text-xs font-medium uppercase tracking-wider">
             <div className="col-span-4">User</div>
             <div className="col-span-2">Credits</div>
@@ -100,11 +145,9 @@ export default function AdminUsersPage() {
             <div className="col-span-1">Action</div>
           </div>
 
-          {/* Table Rows */}
           <div className="divide-y divide-white/5">
             {users.map((user) => (
               <div key={user._id} className="grid grid-cols-1 md:grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-white/2 transition">
-                {/* User Info */}
                 <div className="col-span-4 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary flex items-center justify-center text-primary font-bold text-sm shrink-0">
                     {user.name?.charAt(0).toUpperCase()}
@@ -115,13 +158,11 @@ export default function AdminUsersPage() {
                   </div>
                 </div>
 
-                {/* Credits */}
                 <div className="col-span-2">
                   <span className="text-primary font-semibold text-sm">{user.credits ?? 0}</span>
                   <span className="text-muted text-xs ml-1">credits</span>
                 </div>
 
-                {/* Role Dropdown */}
                 <div className="col-span-3">
                   <select
                     value={user.role}
@@ -135,17 +176,15 @@ export default function AdminUsersPage() {
                   </select>
                 </div>
 
-                {/* Joined */}
                 <div className="col-span-2">
                   <p className="text-muted text-xs">
                     {new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}
                   </p>
                 </div>
 
-                {/* Delete */}
                 <div className="col-span-1">
                   <button
-                    onClick={() => handleDelete(user._id.toString())}
+                    onClick={() => handleDeleteClick(user._id.toString(), user.name)}
                     disabled={deleting === user._id.toString()}
                     className="text-red-400 hover:bg-red-400/10 p-2 rounded-xl transition disabled:opacity-50"
                   >
